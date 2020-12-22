@@ -26,12 +26,9 @@ export default class Recipes extends Component<IProps, IState> {
     };
   }
   componentDidMount(){
-    // window.addEventListener('scroll', ()=>this.loadMore(this));
+    window.addEventListener('scroll', ()=>this.loadMore(this));
     console.log('componentDidMount')
-    // this.loadData()
     this.loadMore(this)
-    // console.log(this.props.profile.user.email)
-    // console.log(this)
   }
 
   componentWillMount(){
@@ -43,28 +40,24 @@ export default class Recipes extends Component<IProps, IState> {
   }
 
   loadData(){
-    // if(!this.state.loading)
-    
-    console.log(`page - ${this.state.page}, state - ${this.state.recipes.length}`)
     let filter = '?';
-    console.log('1212',this.props.profile)
     if(this.state.category)
       filter += `category=${this.state.category}`
-    axiosService.get(`/recipes/getAllRecipesForUser/${this.props.profile.id}`,{
-      params:{
-        limit: 100,
-        filter,
-        page: this.state.page
-      }
-    }).then(({data})=>{
-      console.log(data)
-      this.setState({recipes: [
-        ...this.state.recipes,
-        ...data,
-      ] });
-      // console.log(this.state.recipes.length)
-      this.setState({ loading: false });
-      window.M.AutoInit()
+      axiosService.get(`/recipes/getAllRecipesForUser/${this.props.profile.id}`,{
+        params:{
+          filter,
+          page: this.state.page
+        }
+      }).then(({data})=>{
+        console.log(data)
+        this.setState({recipes: [
+          ...this.state.recipes,
+          ...data,
+        ] });
+        // console.log(this.state.recipes.length)
+        this.setState({ loading: false });
+        window.M.AutoInit()
+        console.log(`page - ${this.state.page}, state - ${this.state.recipes.length}`)
     });
   }
 

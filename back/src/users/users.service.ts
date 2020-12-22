@@ -29,7 +29,7 @@ export class UsersService {
   }
 
   async update(_id: string, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto)
+    // console.log(updateUserDto)
     let upd = await this.userModel.findOneAndUpdate({_id}, updateUserDto,{
       new: true,
       useFindAndModify: false,

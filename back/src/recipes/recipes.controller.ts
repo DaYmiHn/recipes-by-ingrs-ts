@@ -39,7 +39,7 @@ export class RecipesController {
 
 
   @Get('/getAllRecipesForUser/:id')
-  getAllRecipesForUser(@Param('id') id: string) {
-    return this.recipesService.getAllRecipesForUser(id);
+  getAllRecipesForUser(@Param('id') id: string, page: number) {
+    return this.recipesService.getAllRecipesForUser(id, page);
   }
 }

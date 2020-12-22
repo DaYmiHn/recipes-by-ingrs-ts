@@ -38,7 +38,7 @@ export class RecipesService {
     return `This action removes a #${id} recipe`;
   }
   
-  async getAllRecipesForUser(id: string) {
+  async getAllRecipesForUser(id: string, page:number) {
     // let user = await this.usersService.findOne({_id:id});
     // console.log(user);
 
@@ -78,6 +78,6 @@ export class RecipesService {
     //   // res.send( recipes.sort(() => Math.random() - 0.5) ) 
     //   res.send( recipes ) 
     // }).catch((err)=>console.log(err))
-    return await this.recipeModel.aggregate(query).limit(100)
+    return await this.recipeModel.aggregate(query).skip((page-1)*50).limit(50)
   }
 }
