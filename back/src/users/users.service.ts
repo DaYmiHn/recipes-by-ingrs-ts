@@ -21,16 +21,20 @@ export class UsersService {
     return this.userModel.find().limit(1);
   }
 
-  async findOne(email: string) {
-    let user = await this.userModel.find({email}).exec()
+  async findOne(data: object) {
+    console.log(data)
+    let user = await this.userModel.findOne(data)
+    console.log('user', user)
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    let upd = await this.userModel.findOneAndUpdate({id}, updateUserDto,{
-      new: true
+  async update(_id: string, updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto)
+    let upd = await this.userModel.findOneAndUpdate({_id}, updateUserDto,{
+      new: true,
+      useFindAndModify: false,
     });
-    return updateUserDto;
+    return upd;
   }
 
   async remove(id: string) {

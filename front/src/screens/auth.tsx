@@ -3,7 +3,7 @@ import axiosService from '../components/axios';
 import jwt_decode from "jwt-decode";
 
 interface IProps {
-  test: Function,
+  logined: Function,
   loginUser: Function,
 }
 interface IState {
@@ -33,7 +33,7 @@ class Auth extends Component<IProps, IState> {
       window.localStorage.setItem('userToken',data.access_token)
       console.log(jwt_decode(data.access_token))
       this.props.loginUser(jwt_decode(data.access_token))
-      this.props.test()
+      this.props.logined()
     } catch (error) {
       alert('Так не пойдёт....')
     }
@@ -49,7 +49,7 @@ class Auth extends Component<IProps, IState> {
       window.localStorage.setItem('userToken',data.access_token)
       console.log(jwt_decode(data.access_token))
       this.props.loginUser(jwt_decode(data.access_token))
-      this.props.test()
+      this.props.logined()
     } catch (error) {
       alert('Так не пойдёт....')
     }

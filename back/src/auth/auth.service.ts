@@ -11,21 +11,21 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     console.log('validateUser')
-    const [user] = await this.usersService.findOne(email);
+    const user = await this.usersService.findOne({email});
+    console.log('user1',user)
+    
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      return user;
     }
     return null;
   }
 
   async login(user: any) {
-    console.log('login')
     const payload = { 
       email: user.email, 
       status: 'admin', 
-      imaage: 'https://i.imgur.com/e4cwt1E.jpg', 
-      sub: user.userId 
+      image: 'https://i.imgur.com/e4cwt1E.jpg', 
+      id: user._id 
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -33,19 +33,19 @@ export class AuthService {
   }
 
   async register(user:any) {
-    const [findedUser] = await this.usersService.findOne(user.email);
+    const {email} = user;
+    const findedUser = await this.usersService.findOne({email});
 
     if(!findedUser){
       const newUser = await this.usersService.create(user);
-      const payload = { 
-        email: newUser.email, 
-        status: 'admin', 
-        imaage: 'https://i.imgur.com/e4cwt1E.jpg', 
-        sub: newUser.id 
-      };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
+      // const payload = { 
+      //   email: newUser.email, 
+      //   status: 'admin', 
+      //   imaage: 'https://i.imgur.com/e4cwt1E.jpg', 
+      //   sub: newUser.id 
+      // };
+
+      return this.login(newUser);
     } else {
 
     }

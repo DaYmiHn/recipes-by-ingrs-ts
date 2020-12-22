@@ -18,6 +18,9 @@ export class User {
   avatal: string;
   
   @Prop()
+  ingredients: string[];
+
+  @Prop()
   created_at: Date;
 
   @Prop()

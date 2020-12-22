@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 export class CreateUserDto {
 
   @IsNotEmpty()
-  @IsEmail()
+  // @IsEmail()
   email: string;
   
   @IsNotEmpty()
@@ -14,4 +14,5 @@ export class CreateUserDto {
   
   avatal?: string = "https://i.imgur.com/Z9AhvLH.jpg";
 
+  ingredients: string[] = []
 }

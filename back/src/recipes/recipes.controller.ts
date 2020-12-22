@@ -15,7 +15,8 @@ export class RecipesController {
   create(@Body() createRecipeDto: CreateRecipeDto) {
     return this.recipesService.create(createRecipeDto);
   }
-  @UseGuards(JwtAuthGuard)
+  
+  // @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.recipesService.findAll();
@@ -34,5 +35,11 @@ export class RecipesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.recipesService.remove(+id);
+  }
+
+
+  @Get('/getAllRecipesForUser/:id')
+  getAllRecipesForUser(@Param('id') id: string) {
+    return this.recipesService.getAllRecipesForUser(id);
   }
 }
