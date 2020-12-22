@@ -22,9 +22,9 @@ export class UsersService {
   }
 
   async findOne(data: object) {
-    console.log(data)
+    // console.log(data)
     let user = await this.userModel.findOne(data)
-    console.log('user', user)
+    // console.log('user', user)
     return user;
   }
 

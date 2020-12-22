@@ -50,17 +50,17 @@ export default class Recipes extends Component<IProps, IState> {
     console.log('1212',this.props.profile)
     if(this.state.category)
       filter += `category=${this.state.category}`
-    axiosService.get(`/getAllRecipesForUser/${this.props.profile.id}`,{
+    axiosService.get(`/recipes/getAllRecipesForUser/${this.props.profile.id}`,{
       params:{
         limit: 100,
         filter,
         page: this.state.page
       }
     }).then(({data})=>{
-      console.log(data.data.length)
+      console.log(data)
       this.setState({recipes: [
         ...this.state.recipes,
-        ...data.data,
+        ...data,
       ] });
       // console.log(this.state.recipes.length)
       this.setState({ loading: false });

@@ -38,8 +38,46 @@ export class RecipesService {
     return `This action removes a #${id} recipe`;
   }
   
-  getAllRecipesForUser(id: string) {
-    let user = this.usersService.findOne({_id:id})
-    return `This action removes a #${user} recipe`;
+  async getAllRecipesForUser(id: string) {
+    // let user = await this.usersService.findOne({_id:id});
+    // console.log(user);
+
+    let ingrs = await (await this.usersService.findOne({_id:id})).ingredients
+    
+    let cond_or_query = [];
+    ingrs.forEach(element => {
+      cond_or_query.push({ "$eq": [ "$ingredients", element ] })
+    });
+    const query= [
+      { "$match": { "ingredients": { "$in": ingrs } } },
+      { "$unwind": "$ingredients" },
+      { "$group": {
+        "_id": "$_id",
+        "title": { "$first": "$title" },
+        "url": { "$first": "$url" },
+        "ingredients": { "$push": "$ingredients" },
+        "order": {
+          "$sum": { 
+            "$cond": [{
+              "$or": cond_or_query
+            },
+            1,
+            0
+          ]}
+        },
+        "size": {"$sum":1}
+      }},
+      { "$match": { "size" :  {"$gt" : 6 }} },
+      { "$addFields": { "match": {  "$subtract": ["$size", "$order"] } } },
+
+      { "$sort": { "match":1, "size":-1} }
+    ];
+    // if(req.query.category)
+    //   query.unshift({ "$match": { "category":  req.query.category  } })
+    // await app.service('recipe').Model.aggregate(query).skip(parseInt(req.params.page-1)*50).limit(50).toArray().then((recipes)=> {
+    //   // res.send( recipes.sort(() => Math.random() - 0.5) ) 
+    //   res.send( recipes ) 
+    // }).catch((err)=>console.log(err))
+    return await this.recipeModel.aggregate(query).limit(100)
   }
 }
