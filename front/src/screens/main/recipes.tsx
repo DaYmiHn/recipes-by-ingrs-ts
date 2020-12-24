@@ -121,10 +121,10 @@ class Recipes extends Component<IProps, IState> {
     
     return (
       <div className="recipes-page">
-        <div className="row card" style={{ position: "sticky", top: "0", zIndex: 999, marginBottom: "0", marginTop: "0"}}>
+        <div className="row card" style={{ position: "sticky", top: "0", zIndex: 990, marginBottom: "0", marginTop: "0"}}>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
             <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({count_ingr:event.target.value})}}>
-              <option value="" disabled >Кол-во ингр.</option>
+              <option value="" >Кол-во ингр.</option>
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
@@ -136,7 +136,7 @@ class Recipes extends Component<IProps, IState> {
           </div>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
             <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({miss_ingr:event.target.value})}}>
-              <option value="" disabled >Недостаёт ингр.</option>
+              <option value="" >Недостаёт ингр.</option>
               <option value="0">0</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -151,7 +151,7 @@ class Recipes extends Component<IProps, IState> {
           </div>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
             <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({picture:event.target.value})}} >
-              <option value="" disabled >Картинка</option>
+              <option value="" >Картинка</option>
               <option value="true">есть</option>
               <option value="false">нет</option>
             </select>

@@ -73,13 +73,13 @@ export class RecipesService {
     ];
     if(filters.count_ingr)
       query.push({ "$match": { "size":  +filters.count_ingr  } })
-    else if(filters.miss_ingr)
+    if(filters.miss_ingr)
       query.push({ "$match": { "match":  +filters.miss_ingr  } })
-    else if(filters.picture == "true")
+    if(filters.picture == "true")
       query.unshift({ "$match": { "image": { '$exists' : true } } })
-    else if(filters.category)
+    if(filters.category)
       query.unshift({ "$match": { "category":  filters.category  } })
-    else
+    if(!filters.count_ingr && !filters.miss_ingr && !filters.picture && !filters.category)
       query.push({ "$match": { "size" :  {"$gt" : 6 }} })
     console.log(query)
     return await this.recipeModel.aggregate(query).skip((filters.page)*50).limit(50)
