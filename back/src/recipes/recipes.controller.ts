@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -39,7 +39,8 @@ export class RecipesController {
 
 
   @Get('/getAllRecipesForUser/:id')
-  getAllRecipesForUser(@Param('id') id: string, page: number) {
-    return this.recipesService.getAllRecipesForUser(id, page);
+  getAllRecipesForUser(@Param('id') id: string, @Query() filter: any) {
+    // console.log(filter)
+    return this.recipesService.getAllRecipesForUser(id, filter);
   }
 }

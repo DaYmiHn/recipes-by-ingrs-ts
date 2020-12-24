@@ -1,27 +1,34 @@
 import React, { Component } from 'react';
 import Loader from '../../components/loader';
 import axiosService from '../../components/axios';
+import {connect} from 'react-redux';
+import { loadRecipes, changeFilter, resetRecipes } from '../../actions/actionCreator'
+import store  from '../../store/'
 
+let { filter, recipes} = store.getState();
+console.log('filter',filter)
 declare const window: any;
 
 interface IProps {
-  profile: any
+  profile: any,
+  loadRecipes?:any,
+  changeFilter?:any,
+  resetRecipes?:any,
+  recipes?:any
 }
 
 interface IState {
   recipes: object[],
   loading: Boolean,
-  page: number,
   category: string | null,
 }
 
-export default class Recipes extends Component<IProps, IState> {
+class Recipes extends Component<IProps, IState> {
   constructor(props:IProps) {
     super(props);
     this.state = {
       recipes: [],
       loading: true,
-      page: 0,
       category: null
     };
   }
@@ -31,54 +38,55 @@ export default class Recipes extends Component<IProps, IState> {
     this.loadMore(this)
   }
 
-  componentWillMount(){
-    window.addEventListener('scroll', async ()=> {if(!this.state.loading || this.state.page === 0)await this.loadMore(this)});
-  }
+  // componentWillMount(){
+  //   window.addEventListener('scroll', async ()=> {if(!this.state.loading || filter.page === 0)await this.loadMore(this)});
+  // }
   
   componentWillUnmount(){
-      window.removeEventListener('scroll', this.loadMore(this));
+    window.removeEventListener('scroll',  async ()=> {if(!this.state.loading || filter.page === 0)await this.loadMore(this)});
   }
 
-  loadData(){
-    let filter = '?';
-    if(this.state.category)
-      filter += `category=${this.state.category}`
+
+
+
+
+  loadData( page?:number){
       axiosService.get(`/recipes/getAllRecipesForUser/${this.props.profile.id}`,{
         params:{
-          filter,
-          page: this.state.page
+          filter: {
+            ...store.getState().filter,
+            page
+          },
         }
       }).then(({data})=>{
-        console.log(data)
-        this.setState({recipes: [
-          ...this.state.recipes,
-          ...data,
-        ] });
-        // console.log(this.state.recipes.length)
+        this.props.loadRecipes(data)
         this.setState({ loading: false });
         window.M.AutoInit()
-        console.log(`page - ${this.state.page}, state - ${this.state.recipes.length}`)
+        const state:object[] = store.getState().recipes
+        console.log(`page - ${store.getState().filter.page}, state - ${state.length}`)
     });
   }
 
 
+
+
+
   async loadMore(that:any){
     await that.setState({ loading: true });
-    // console.log(this)
     if (window.document.scrollingElement.scrollHeight - (window.innerHeight + document.documentElement.scrollTop) <= 1 ) {
-      await that.setState( {page : this.state.page + 1});
-      
-      
-      // console.log(this.state.filter.page)
-      await that.loadData()
+      // await that.setState( {page : this.state.page + 1});
+      await that.loadData(store.getState().filter.page)
+      this.props.changeFilter({page: store.getState().filter.page+1})
       await that.setState({ loading: false });
     } else {
       await that.setState({ loading: false });
     }
   }
+
+
+
   getCountMissIngr(order:any,size:any){
     let perc = order/size*100
-    // console.log(perc)
     if (perc == 100 )
       return "#26a69a"
     else if (perc > 40 && perc <100)
@@ -86,6 +94,9 @@ export default class Recipes extends Component<IProps, IState> {
     else 
       return "red"   
   }
+
+
+
 
   formatIngrsList(recipe:any){
     let res = '<ul>';
@@ -96,13 +107,23 @@ export default class Recipes extends Component<IProps, IState> {
     return res
   }
   
+
+  setFilterAndUpdate(filter:any){
+    const { changeFilter, resetRecipes } = this.props;
+    changeFilter(filter); 
+    resetRecipes()
+    this.loadData(0)
+  }
   
   render() {
+    const {recipes}:any = store.getState();
+    
+    
     return (
       <div className="recipes-page">
         <div className="row card" style={{ position: "sticky", top: "0", zIndex: 999, marginBottom: "0", marginTop: "0"}}>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
-            <select defaultValue=''>
+            <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({count_ingr:event.target.value})}}>
               <option value="" disabled >Кол-во ингр.</option>
               <option value="3">3</option>
               <option value="4">4</option>
@@ -114,7 +135,7 @@ export default class Recipes extends Component<IProps, IState> {
             </select>
           </div>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
-            <select defaultValue=''>
+            <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({miss_ingr:event.target.value})}}>
               <option value="" disabled >Недостаёт ингр.</option>
               <option value="0">0</option>
               <option value="1">1</option>
@@ -129,16 +150,14 @@ export default class Recipes extends Component<IProps, IState> {
             </select>
           </div>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
-            <select defaultValue=''>
+            <select defaultValue=''  onChange={(event)=>{this.setFilterAndUpdate({picture:event.target.value})}} >
               <option value="" disabled >Картинка</option>
               <option value="true">есть</option>
               <option value="false">нет</option>
             </select>
           </div>
           <div className="input-field col s6 l3" style={{margin:"0"}}>
-            <select onChange={(event)=>{ this.setState( {category : event.target.value}, () => {
-                                            this.setState( {recipes : []}, ()=>{ this.loadData()})
-                                        });}} defaultValue=''>
+            <select defaultValue='' onChange={(event)=>{this.setFilterAndUpdate({category:event.target.value})}}>
               <option value="" >Категория</option>
               <option value="блины, оладьи, сырники">блины, оладьи, сырники</option>
               <option value="бутерброды">бутерброды</option>
@@ -165,8 +184,8 @@ export default class Recipes extends Component<IProps, IState> {
 
         <div className='row z-depth-3' style={{padding:'10px'}} >
           { this.state.loading == true &&  <Loader/>}
-          { this.state.recipes !== undefined && 
-            this.state.recipes.map((value:any, index) => { 
+          { recipes !== undefined && 
+            recipes.map((value:any, index:number) => { 
               return (
               <div key={index} className="col s6 m4 l3" >
                   <div className="card small " style={{borderRadius:"0px"}}>
@@ -179,7 +198,7 @@ export default class Recipes extends Component<IProps, IState> {
                   </a>
                   <div className="card-action" style={{paddingLeft:'10px', paddingRight:'10px'}} >
                     <span  data-position="top" data-tooltip={this.formatIngrsList(value)} style={{backgroundColor: this.getCountMissIngr(value.order,value.size)}} className="new badge tooltipped" data-badge-caption="">{value.order} из {value.size} есть</span>
-                    {/* <a href={value.url}>Открыть */}
+                    <a href={value.url}>Открыть</a>
                   </div>
                 </div>
               </div>
@@ -191,3 +210,11 @@ export default class Recipes extends Component<IProps, IState> {
   );
   }
 }
+const mapStateToProps = (state:any) => {
+  return {
+    recipes: state.recipes,
+    filter: state.filter,
+  }
+}
+
+export default connect((mapStateToProps), {loadRecipes, changeFilter, resetRecipes})(Recipes);

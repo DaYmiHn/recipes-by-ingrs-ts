@@ -38,17 +38,17 @@ export class RecipesService {
     return `This action removes a #${id} recipe`;
   }
   
-  async getAllRecipesForUser(id: string, page:number) {
-    // let user = await this.usersService.findOne({_id:id});
-    // console.log(user);
-
+  async getAllRecipesForUser(id: string, {filter}:any) {
+    // console.log(filter)
+    const filters:any = JSON.parse(filter);
+    console.log(filters)
     let ingrs = await (await this.usersService.findOne({_id:id})).ingredients
     
     let cond_or_query = [];
     ingrs.forEach(element => {
       cond_or_query.push({ "$eq": [ "$ingredients", element ] })
     });
-    const query= [
+    const query:any = [
       { "$match": { "ingredients": { "$in": ingrs } } },
       { "$unwind": "$ingredients" },
       { "$group": {
@@ -67,17 +67,21 @@ export class RecipesService {
         },
         "size": {"$sum":1}
       }},
-      { "$match": { "size" :  {"$gt" : 6 }} },
       { "$addFields": { "match": {  "$subtract": ["$size", "$order"] } } },
 
       { "$sort": { "match":1, "size":-1} }
     ];
-    // if(req.query.category)
-    //   query.unshift({ "$match": { "category":  req.query.category  } })
-    // await app.service('recipe').Model.aggregate(query).skip(parseInt(req.params.page-1)*50).limit(50).toArray().then((recipes)=> {
-    //   // res.send( recipes.sort(() => Math.random() - 0.5) ) 
-    //   res.send( recipes ) 
-    // }).catch((err)=>console.log(err))
-    return await this.recipeModel.aggregate(query).skip((page-1)*50).limit(50)
+    if(filters.count_ingr)
+      query.push({ "$match": { "size":  +filters.count_ingr  } })
+    else if(filters.miss_ingr)
+      query.push({ "$match": { "match":  +filters.miss_ingr  } })
+    else if(filters.picture == "true")
+      query.unshift({ "$match": { "image": { '$exists' : true } } })
+    else if(filters.category)
+      query.unshift({ "$match": { "category":  filters.category  } })
+    else
+      query.push({ "$match": { "size" :  {"$gt" : 6 }} })
+    console.log(query)
+    return await this.recipeModel.aggregate(query).skip((filters.page)*50).limit(50)
   }
 }

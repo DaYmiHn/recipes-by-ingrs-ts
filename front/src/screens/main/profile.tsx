@@ -7,7 +7,7 @@ import {
   useRouteMatch,
   useParams
 } from "react-router-dom";
-
+import store from '../../store/'
 interface IProps {
     profile: {
       image: string
@@ -21,10 +21,12 @@ interface IState {
 
 export default function Profile(props:any) {
   let match = useRouteMatch();
-  console.log(props)
-  console.log(JSON.stringify(props))
+  const {recipes, user}:any = store.getState();
+  console.log(recipes)
+  user.email = '34234'
   return (
     <div>
+      <h2>{user.email}</h2>
       <h2>{props.profile.image}</h2>
       <img src={props.profile.image} />
       <h2>Заголовок</h2>

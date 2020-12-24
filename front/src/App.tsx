@@ -56,9 +56,7 @@ class Application extends Component<IProps, IState> {
         console.log(code);
         loginUser(code);
         this.logined();
-      } 
-      console.log(user)
-
+      }
     } catch (error) {
       switch (error.message){
         case 'Отсутствует токен':
