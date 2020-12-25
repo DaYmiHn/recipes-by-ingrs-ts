@@ -65,21 +65,18 @@ export default class Main extends Component<IProps, IState> {
           <h2>Главная</h2>
         </Route>
         <Route path="/news">
-          <News  profile={this.props.profile}/>
+          <News/>
         </Route>
         <Route path="/about">
           <h2>about</h2>
         </Route>
         <Route path="/recipes">
           <Recipes profile={this.props.profile} />
-          {/* <h2>recipes</h2> */}
         </Route>
         <Route path="/my_ingredients">
           <Ingredients profile={this.props.profile} />
-          {/* <h2>my_ingredients</h2> */}
         </Route>
         <Route path="/profile">
-          {/* <Profile profile={this.props.profile} /> */}
           <Profile profile={this.props.profile}/>
         </Route>
         <Route path="/search">

@@ -1,164 +1,60 @@
-import React, { Component } from 'react';
-import axiosService from '../../components/axios';
-import {connect} from 'react-redux';
-import { loadRecipes, changeFilter, resetRecipes } from '../../actions/actionCreator'
-import store  from '../../store/'
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { gql } from '@apollo/client';
-interface IProps {
-  profile: any
-}
+import { useMutation, gql, useQuery } from '@apollo/client';
 
-interface IState {
-  myIngredients: object[],
-  searchedIngredients: object[],
-}
-
-const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
-  cache: new InMemoryCache()
-});
-client
-  .mutate({
-    mutation: gql`
-        mutation {
-        createNews(input: {
-          title: "andy",
-          body: "hope is a good thing",
-        }) {
-          id
-          title
-        }
-      }
-    `
-  })
-  .then(({data}) => console.log(data.createNews));
-
-export default class Ingredients extends Component<IProps, IState> {
-  constructor(props:IProps) {
-    super(props);
-    this.state = {
-      myIngredients: [],
-      searchedIngredients: []
-    };
-  }
-  async componentDidMount(){
-    this.getData();
-    await axiosService.get('/ingredients',{
-      params:{
-        limit: 100
-      }
-    }).then(({data})=>{
-      console.log(data)
-      if(data !== [])
-        this.setState({searchedIngredients:data})
-    });
-  }
-
-  async getData(){
-    console.log('getData')
-    console.log(this.props.profile)
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(({data})=>{
-      console.log(data[0].ingredients)
-        this.setState({myIngredients:data[0].ingredients})
-    });
-  }
-  
-  async addIngredient(ingr:any){
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(async ({data})=>{
-      if (this.state.myIngredients){
-        if(!this.state.myIngredients.includes(ingr)) {
-          data = data[0];
-          console.log(data.ingredients);
-          if(data.ingredients)
-            data.ingredients.push(ingr)
-          else
-            data.ingredients = [ingr]
-          await axiosService.put(`/users/${this.props.profile.id}`,{
-            ...data,
-            ingredients: data.ingredients
-          }).then(()=>this.getData())
-        } else {
-          window.alert('Уже в холодильнике')
-        }
-      } else {
-        await axiosService.put(`/users/${this.props.profile.id}`,{
-          ...data,
-          ingredients: [ingr]
-        }).then(()=>this.getData())
-      }
-    });
-    
-  }
-
-  async removeIngredient(ingr:any){
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(async ({data})=>{
-      data = data[0];
-      if (data.ingredients.indexOf(ingr) > -1) {
-        data.ingredients.splice(data.ingredients.indexOf(ingr), 1);
-      }
-      await axiosService.put(`/users/${this.props.profile.id}`,{
-        ...data
-      }).then(()=>this.getData())
-    });
-
-    
-  }
-  
-  async getQueringResult(str:string){
-    if(!str){
-      this.getData()
-      return false
+const EXCHANGE_RATES = gql`
+  mutation {
+    createNews(input: {
+      title: "andy",
+      body: "hope is a good thing",
+    }) {
+      id
+      title
     }
-    console.log(str)
-    await axiosService.get('/ingredients/findByPart/'+str).then(({data})=>{
-      if(data !== [])
-        this.setState({searchedIngredients:data})
-    });
   }
+`;
+const UPDATE_TODO = gql`
+  mutation UpdateTodo($id: String!, $type: String!) {
+    updateTodo(id: $id, type: $type) {
+      id
+      type
+    }
+  }
+`;
+const GET_TODOS = gql`
+    {
+    newses {
+      id
+      title
+      body
+    }
+  }
+`;
 
-  render() {
-    return <div className='row z-depth-2' >
-    <div className='col m4 s12 card' style={{padding : "0 10px!important", margin: '0px'}}>  
-      <div className="row" style={{marginBottom: '0px', marginTop: '30px' }}>
-        <div className="input-field">
-          <input id="ingredient_typing" type="text" className="validate"  onChange={(e)=>this.getQueringResult(e.target.value)}/>
-          <label htmlFor="ingredient_typing">Введите ингредиент</label>
-        </div>
-      </div>
-      <div className="row" style={{maxHeight:'500px', overflow: 'auto'}}>
-        <ul className="collection">
-        { this.state.searchedIngredients && 
-        this.state.searchedIngredients.map((value:any, index) => {
-            var color = this.state.myIngredients.includes(value.title) ? '#cecece': '#fff';
-          
-          return <li key={index} style={{cursor:'pointer', marginBottom: '1px', backgroundColor: color}} className="collection-item hoverable" onClick={()=>this.addIngredient(value.title)}>{value.title}</li>
-        })}
-        </ul>
-      </div>
-    </div>
-     
+export default function News() {
+  const { loading, error, data } = useQuery(GET_TODOS);
+  const [updateTodo] = useMutation(EXCHANGE_RATES);
 
-    <div className='col m8 s12'>
-      <h4>Ваши ингредиенты</h4>
-      <p>Для удаления можно просто нажать</p>
-      { this.state.myIngredients && 
-        this.state.myIngredients.map((value, index) => {
-        return <button key={index} className="waves-effect waves-light btn" style={{margin: '0 5px 5px 0'}} onClick={()=>this.removeIngredient(value)}>{value}</button>
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+    console.log(data)
+  return <div className="row">
+      {data.newses.map(({ id, title, body }:any) => {
+        return (
+          <div className="card col xl3 l4 s6" style={{padding: "0 .75rem"}}>
+            <div className="card-image waves-effect waves-block waves-light">
+              <img className="activator" src="https://i1.wp.com/katzenworld.co.uk/wp-content/uploads/2019/06/funny-cat.jpeg?fit=1920%2C1920&ssl=1"/>
+            </div>
+            <div className="card-content">
+              <span className="card-title activator grey-text text-darken-4" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginRight: '20px'}}>{title}<i className="material-icons right">more_vert</i></span>
+              <p><a href="#">Жмяк</a></p>
+            </div>
+            <div className="card-reveal">
+              <span className="card-title grey-text text-darken-4">{title}<i className="material-icons right">close</i></span>
+              <p>{body}</p>
+            </div>
+          </div>
+        );
       })}
     </div>
-  </div>; 
-  }
+  
+  
 }
