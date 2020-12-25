@@ -2,22 +2,20 @@ type Query {
   newses: [News]
   news(id: ID!): News
 }
+input NewsInput {
+  title: String,
+  body: String
+  userId: String
+}
+
+type Mutation {
+  createNews(input: NewsInput): News
+}
 
 type News {
   id: ID!
-  article: Article
-  user: User
-  isModer: Boolean!
-}
-
-type User {
-  id: ID!
-  email: String!
-}
-
-type Article {
-  id: ID!
   title: String,
-  text: String
+  body: String
+  userId: String!
 }
 

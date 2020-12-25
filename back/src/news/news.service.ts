@@ -1,22 +1,38 @@
 import { HttpService, Injectable } from '@nestjs/common';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class NewsService {
-  private apiUrl = 'https://api.spacexdata.com/v3'
+  private apiUrl = 'https://jsonplaceholder.typicode.com'
 
   constructor(
     private http: HttpService
   ){}
 
+  toNews(news:any){
+    return {
+      id: news.id,
+      title: news.title,
+      body: news.body,
+      userId: news.userId
+    }
+  }
   getAllLaunches(){
-    return this.http.get(`${this.apiUrl}/launches`)
+    console.log(this.http.get(`${this.apiUrl}/posts`))
+    return this.http.get(`${this.apiUrl}/posts`).pipe(map(({data}) => data.map(this.toNews)))
   }
   
   getLaunchById(id: number){
-    // return this.http.get(`${this.apiUrl}/launches/${id}`)
+    return this.http.get(`${this.apiUrl}/posts/${id}`).pipe(map(({data}) => data))
+  }
+  
+  
+  create(news: any){
+    console.log(news)
     return {
-      id:'1232312312',
-      fdfdf:'1232312312',
+      ...news,
+      id: Math.round(Math.random()*10),
+      title:'created'
     }
   }
 
