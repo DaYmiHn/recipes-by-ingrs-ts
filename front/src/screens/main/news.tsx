@@ -3,6 +3,8 @@ import axiosService from '../../components/axios';
 import {connect} from 'react-redux';
 import { loadRecipes, changeFilter, resetRecipes } from '../../actions/actionCreator'
 import store  from '../../store/'
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { gql } from '@apollo/client';
 interface IProps {
   profile: any
 }
@@ -11,6 +13,26 @@ interface IState {
   myIngredients: object[],
   searchedIngredients: object[],
 }
+
+const client = new ApolloClient({
+  uri: 'http://localhost:5000/graphql',
+  cache: new InMemoryCache()
+});
+client
+  .mutate({
+    mutation: gql`
+        mutation {
+        createNews(input: {
+          title: "andy",
+          body: "hope is a good thing",
+        }) {
+          id
+          title
+        }
+      }
+    `
+  })
+  .then(({data}) => console.log(data.createNews));
 
 export default class Ingredients extends Component<IProps, IState> {
   constructor(props:IProps) {
