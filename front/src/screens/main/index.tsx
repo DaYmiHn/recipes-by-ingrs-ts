@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Profile from './profile';
 import Ingredients from './ingredients';
 import Recipes from './recipes';
+import News from './news';
 import {
   BrowserRouter as Router,
   Switch,
@@ -39,6 +40,7 @@ export default class Main extends Component<IProps, IState> {
           <Link to="/" className="brand-logo">   Domchanski</Link>
           <a href="" data-target="mobile-demo" className="sidenav-trigger" onClick={() => window.M.Sidenav.init(document.querySelectorAll('.sidenav'))}><i className="material-icons">menu</i></a>
           <ul className="right hide-on-med-and-down">
+            <li><Link to="/news" title="Новости" ><i className="material-icons">article</i></Link></li>
             <li><Link to="/search" title="Поиск по сайту" ><i className="material-icons">search</i></Link></li>
             <li><Link to="/recipes" title="Рецептики" ><i className="material-icons">restaurant_menu</i></Link></li>
             <li><Link to="/my_ingredients" title="Мои продукты" ><i className="material-icons">kitchen</i></Link></li>
@@ -49,6 +51,7 @@ export default class Main extends Component<IProps, IState> {
         </div>
       </nav>
       <ul className="sidenav" id="mobile-demo">
+        <li><Link to="/news" title="Новости" ><i className="material-icons">article</i>   Новости    </Link></li>
         <li><Link to="/about" title="Поиск по сайту" ><i className="material-icons">search</i>   Поиск по сайту    </Link></li>
         <li><Link to="/recipes" title="Рецептики" ><i className="material-icons">restaurant_menu</i>    Рецептики   </Link></li>
         <li><Link to="/my_ingredients" title="Мои продукты" ><i className="material-icons">kitchen</i>     Мои продукты     </Link></li>
@@ -60,6 +63,9 @@ export default class Main extends Component<IProps, IState> {
       <Switch>
         <Route exact={true} path="/">
           <h2>Главная</h2>
+        </Route>
+        <Route path="/news">
+          <News  profile={this.props.profile}/>
         </Route>
         <Route path="/about">
           <h2>about</h2>
