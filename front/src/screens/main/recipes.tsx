@@ -6,7 +6,6 @@ import { loadRecipes, changeFilter, resetRecipes } from '../../actions/actionCre
 import store  from '../../store/'
 
 let { filter, recipes} = store.getState();
-console.log('filter',filter)
 declare const window: any;
 
 interface IProps {
@@ -33,21 +32,23 @@ class Recipes extends Component<IProps, IState> {
     };
   }
   componentDidMount(){
-    window.addEventListener('scroll', ()=>this.loadMore(this));
-    console.log('componentDidMount')
+    window.addEventListener('scroll', this.scrollListener);
     this.loadMore(this)
   }
 
-  // componentWillMount(){
-  //   window.addEventListener('scroll', async ()=> {if(!this.state.loading || filter.page === 0)await this.loadMore(this)});
-  // }
+  componentWillMount(){
+    this.setFilterAndUpdate({page:0})
+  }
   
   componentWillUnmount(){
-    window.removeEventListener('scroll',  async ()=> {if(!this.state.loading || filter.page === 0)await this.loadMore(this)});
+    window.removeEventListener('scroll',  this.scrollListener);
   }
 
 
-
+  scrollListener = () => {
+    if(!this.state.loading)
+      this.loadMore(this)
+  }
 
 
   loadData( page?:number){
@@ -74,7 +75,6 @@ class Recipes extends Component<IProps, IState> {
   async loadMore(that:any){
     await that.setState({ loading: true });
     if (window.document.scrollingElement.scrollHeight - (window.innerHeight + document.documentElement.scrollTop) <= 1 ) {
-      // await that.setState( {page : this.state.page + 1});
       await that.loadData(store.getState().filter.page)
       this.props.changeFilter({page: store.getState().filter.page+1})
       await that.setState({ loading: false });
