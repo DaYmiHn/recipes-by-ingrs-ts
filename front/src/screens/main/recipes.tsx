@@ -9,7 +9,7 @@ let { filter, recipes} = store.getState();
 declare const window: any;
 
 interface IProps {
-  profile: any,
+  profile?: any,
   loadRecipes?:any,
   changeFilter?:any,
   resetRecipes?:any,
@@ -85,7 +85,7 @@ class Recipes extends Component<IProps, IState> {
 
 
 
-  getCountMissIngr(order:any,size:any){
+  public getCountMissIngr(order:any,size:any){
     let perc = order/size*100
     if (perc == 100 )
       return "#26a69a"
@@ -94,7 +94,6 @@ class Recipes extends Component<IProps, IState> {
     else 
       return "red"   
   }
-
 
 
 
