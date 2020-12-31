@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import { loadRecipes, changeFilter, resetRecipes } from '../../actions/actionCreator'
 import store  from '../../store/'
 
-let { filter, recipes} = store.getState();
+// let { filter, recipes} = store.getState();
 declare const window: any;
 
 interface IProps {
@@ -13,7 +13,8 @@ interface IProps {
   loadRecipes?:any,
   changeFilter?:any,
   resetRecipes?:any,
-  recipes?:any
+  recipes?:any,
+  filter?:any,
 }
 
 interface IState {
@@ -22,7 +23,7 @@ interface IState {
   category: string | null,
 }
 
-class Recipes extends Component<IProps, IState> {
+export class Recipes extends Component<IProps, IState> {
   constructor(props:IProps) {
     super(props);
     this.state = {
@@ -33,11 +34,11 @@ class Recipes extends Component<IProps, IState> {
   }
   componentDidMount(){
     window.addEventListener('scroll', this.scrollListener);
-    this.loadMore(this)
+    // this.loadMore(this)
   }
 
   componentWillMount(){
-    this.setFilterAndUpdate({page:0})
+    this.setFilterAndUpdate({page:1})
   }
   
   componentWillUnmount(){
@@ -55,7 +56,7 @@ class Recipes extends Component<IProps, IState> {
       axiosService.get(`/recipes/getAllRecipesForUser/${this.props.profile.id}`,{
         params:{
           filter: {
-            ...store.getState().filter,
+            ...this.props.filter,
             page
           },
         }
@@ -63,8 +64,8 @@ class Recipes extends Component<IProps, IState> {
         this.props.loadRecipes(data)
         this.setState({ loading: false });
         window.M.AutoInit()
-        const state:object[] = store.getState().recipes
-        console.log(`page - ${store.getState().filter.page}, state - ${state.length}`)
+        const state:object[] = this.props.recipes
+        console.log(`page - ${this.props.filter.page}, state - ${state.length}`)
     });
   }
 
@@ -75,8 +76,8 @@ class Recipes extends Component<IProps, IState> {
   async loadMore(that:any){
     await that.setState({ loading: true });
     if (window.document.scrollingElement.scrollHeight - (window.innerHeight + document.documentElement.scrollTop) <= 1 ) {
-      await that.loadData(store.getState().filter.page)
-      this.props.changeFilter({page: store.getState().filter.page+1})
+      await that.loadData(this.props.filter.page)
+      this.props.changeFilter({page: this.props.filter.page+1})
       await that.setState({ loading: false });
     } else {
       await that.setState({ loading: false });
@@ -107,15 +108,35 @@ class Recipes extends Component<IProps, IState> {
   }
   
 
-  setFilterAndUpdate(filter:any){
+  async setFilterAndUpdate(filter:any){
     const { changeFilter, resetRecipes } = this.props;
-    changeFilter(filter); 
-    resetRecipes()
-    this.loadData(0)
+    await store.dispatch(changeFilter(filter))
+    await store.dispatch(changeFilter({page:1}))
+    // .then(() =>
+    await store.dispatch(resetRecipes())
+      // .then(() => {
+        // console.log('dfsdf', this.props.filter)
+        this.loadData(0)
+      // })
+    // );
+
+
+    // changeFilter(filter).then(()=>{
+    //   resetRecipes().then(()=>{
+    //     console.log('dfsdf', this.props.filter)
+    //     this.loadData(0)
+    //   }); 
+      
+    // })
+    
+    // setTimeout(()=>{
+      
+    // },1000) 
+    
   }
   
   render() {
-    const {recipes}:any = store.getState();
+    const {recipes}:any = this.props;
     
     
     return (
@@ -183,8 +204,8 @@ class Recipes extends Component<IProps, IState> {
 
         <div className='row z-depth-3' style={{padding:'10px'}} >
           { this.state.loading == true &&  <Loader/>}
-          { recipes !== undefined && 
-            recipes.map((value:any, index:number) => { 
+          { this.props.recipes !== undefined && 
+            this.props.recipes.map((value:any, index:number) => { 
               return (
               <div key={index} className="col s6 m4 l3" >
                   <div className="card small " style={{borderRadius:"0px"}}>

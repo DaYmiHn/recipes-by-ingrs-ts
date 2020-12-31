@@ -12,7 +12,7 @@ const filter = (state={
   miss_ingr: '',
   picture: '',
   category: '',
-  page: 0,
+  page: 1,
 }, {activeFilter, type}:IRecipe) => {
   switch (type){
     case CHANGE_FILTER:
