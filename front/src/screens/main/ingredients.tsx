@@ -100,7 +100,7 @@ export class Ingredients extends Component<IProps, IState> {
       <div className="row" style={{marginBottom: '0px', marginTop: '30px' }}>
         <div className="input-field">
           <input id="ingredient_typing" type="text" className="validate"  onChange={(e)=>this.getQueringResult(e.target.value)}/>
-          <label htmlFor="ingredient_typing">Введите ингредиент</label>
+          <label htmlFor="ingredient_typing" style={{marginLeft: "10px"}}>Введите ингредиент</label>
         </div>
       </div>
       <div className="row" style={{maxHeight:'500px', overflow: 'auto'}}>
