@@ -12,7 +12,7 @@ export class CreateUserDto {
 
   role?: string = 'client';
   
-  avatal?: string = "https://i.imgur.com/Z9AhvLH.jpg";
+  avatal?: string = "https://i.imgur.com/pK5fLFs.png";
 
   ingredients: string[] = []
 }

@@ -24,7 +24,7 @@ export class AuthService {
     const payload = { 
       email: user.email, 
       status: 'admin', 
-      image: 'https://i.imgur.com/e4cwt1E.jpg', 
+      image: 'https://i.imgur.com/pK5fLFs.png', 
       id: user._id 
     };
     return {
