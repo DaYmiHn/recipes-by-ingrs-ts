@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axiosService from '../../components/axios';
+import {connect} from 'react-redux';
 
 interface IProps {
-  profile: any
+  profile: any,
+  user: any
 }
 
 interface IState {
@@ -10,7 +12,7 @@ interface IState {
   searchedIngredients: object[],
 }
 
-export default class Ingredients extends Component<IProps, IState> {
+export class Ingredients extends Component<IProps, IState> {
   constructor(props:IProps) {
     super(props);
     this.state = {
@@ -33,32 +35,24 @@ export default class Ingredients extends Component<IProps, IState> {
 
   async getData(){
     console.log('getData')
-    console.log(this.props.profile)
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(({data})=>{
-      console.log(data[0].ingredients)
-        this.setState({myIngredients:data[0].ingredients})
+    console.log(this.props.user)
+    await axiosService.get(`/users/${this.props.user.id}`).then(async ({data})=>{
+      console.log('data',data)
+      this.setState({myIngredients: data?.ingredients || []})
+      console.log(this.state.myIngredients)
     });
   }
   
   async addIngredient(ingr:any){
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(async ({data})=>{
-      if (this.state.myIngredients){
+    await axiosService.get(`/users/${this.props.user.id}`).then(async ({data})=>{
+      if (this.state.myIngredients.length){
         if(!this.state.myIngredients.includes(ingr)) {
-          data = data[0];
           console.log(data.ingredients);
           if(data.ingredients)
             data.ingredients.push(ingr)
           else
             data.ingredients = [ingr]
-          await axiosService.put(`/users/${this.props.profile.id}`,{
+          await axiosService.put(`/users/${this.props.user.id}`,{
             ...data,
             ingredients: data.ingredients
           }).then(()=>this.getData())
@@ -66,7 +60,7 @@ export default class Ingredients extends Component<IProps, IState> {
           window.alert('Уже в холодильнике')
         }
       } else {
-        await axiosService.put(`/users/${this.props.profile.id}`,{
+        await axiosService.put(`/users/${this.props.user.id}`,{
           ...data,
           ingredients: [ingr]
         }).then(()=>this.getData())
@@ -76,16 +70,11 @@ export default class Ingredients extends Component<IProps, IState> {
   }
 
   async removeIngredient(ingr:any){
-    await axiosService.get('/users',{
-      params: {
-        _id: this.props.profile.id
-      }
-    }).then(async ({data})=>{
-      data = data[0];
+    await axiosService.get(`/users/${this.props.user.id}`).then(async ({data})=>{
       if (data.ingredients.indexOf(ingr) > -1) {
         data.ingredients.splice(data.ingredients.indexOf(ingr), 1);
       }
-      await axiosService.put(`/users/${this.props.profile.id}`,{
+      await axiosService.put(`/users/${this.props.user.id}`,{
         ...data
       }).then(()=>this.getData())
     });
@@ -117,7 +106,7 @@ export default class Ingredients extends Component<IProps, IState> {
       <div className="row" style={{maxHeight:'500px', overflow: 'auto'}}>
         <ul className="collection">
         { this.state.searchedIngredients && 
-        this.state.searchedIngredients.map((value:any, index) => {
+          this.state.searchedIngredients.map((value:any, index) => {
             var color = this.state.myIngredients.includes(value.title) ? '#cecece': '#fff';
           
           return <li key={index} style={{cursor:'pointer', marginBottom: '1px', backgroundColor: color}} className="collection-item hoverable" onClick={()=>this.addIngredient(value.title)}>{value.title}</li>
@@ -138,3 +127,12 @@ export default class Ingredients extends Component<IProps, IState> {
   </div>; 
   }
 }
+
+const mapStateToProps = (state:any) => {
+  return {
+    tasks: state.tasks,
+    filters: state.filters,
+    user: state.user,
+  }
+}
+export default connect((mapStateToProps), {})(Ingredients);

@@ -72,11 +72,10 @@ class Application extends Component<IProps, IState> {
     this.setState({login: true})
   }
 
-
   render() {
     if(this.state.login === undefined) {
       return <Loader />;
-    } else if(this.state.login) {
+    } else if(this.state.login && this.props.user !== {}) {
       return <Main profile={this.props.user}/>;
     }
     return <Login logined={()=>{this.logined()}} loginUser={this.props.loginUser} />;

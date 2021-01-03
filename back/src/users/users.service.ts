@@ -17,8 +17,10 @@ export class UsersService {
 
   }
 
-  findAll() {
-    return this.userModel.find().limit(1);
+  async findAll() {
+    let users = await this.userModel.find();
+    console.log('users',users)
+    return users;
   }
 
   async findOne(data: object) {

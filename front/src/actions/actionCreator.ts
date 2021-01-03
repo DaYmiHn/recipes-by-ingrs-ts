@@ -1,5 +1,5 @@
 import { ADD_TASK, REMOVE_TASK, TOOGLE_TASK, CHANGE_FILTER,
-  LOGIN_USER, LOAD_RECIPES, RESET_RECIPES } from '../store/constants'
+  LOGIN_USER, LOAD_RECIPES, RESET_RECIPES, LOGOUT_USER } from '../store/constants'
 
 export const addTask = (id:any, text:string, isCompleted:boolean) => ({
   type: ADD_TASK,
@@ -24,6 +24,10 @@ export const loginUser = (user:object) => ({
   user
 });
 
+export const logoutUser = (user:object = {}) => ({
+  type: LOGOUT_USER,
+  user
+});
 
 ////////////////////////////////////////////////////////////////////////////////////
 

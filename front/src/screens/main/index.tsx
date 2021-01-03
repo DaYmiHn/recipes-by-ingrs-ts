@@ -10,11 +10,13 @@ import {
   Link
 } from "react-router-dom";
 
-
+import {connect} from 'react-redux';
+import { logoutUser } from '../../actions/actionCreator'
 
 
 interface IProps {
-  profile: object|null
+  profile: object|null,
+  logoutUser: any
 }
 
 interface IState {
@@ -24,7 +26,7 @@ interface IState {
 
 declare const window: any;
 
-export default class Main extends Component<IProps, IState> {
+export  class Main extends Component<IProps, IState> {
   constructor(props:IProps) {
     super(props);
     this.state = {
@@ -33,6 +35,10 @@ export default class Main extends Component<IProps, IState> {
     }
   }
   
+  logout(){
+    window.confirm("Точно хотите выйти?") && !window.localStorage.setItem('userToken', '') && window.location.reload() && this.props.logoutUser()
+  }
+
   render() {
     return <Router>
       <nav>
@@ -45,7 +51,7 @@ export default class Main extends Component<IProps, IState> {
             <li><Link to="/recipes" title="Рецептики" ><i className="material-icons">restaurant_menu</i></Link></li>
             <li><Link to="/my_ingredients" title="Мои продукты" ><i className="material-icons">kitchen</i></Link></li>
             <li><Link to="/profile" title="Мой профиль" ><i className="material-icons">person</i></Link></li>
-            <li><a title="Выйти из профиля" onClick={() => window.confirm("Точно хотите выйти?") && !window.localStorage.setItem('userToken', '') && window.location.reload()}><i className="material-icons">clear</i></a></li>
+            <li><a title="Выйти из профиля" onClick={() => this.logout() }><i className="material-icons">clear</i></a></li>
             <li><Link to="/about" title="ещё всякое..."><i className="material-icons">more_vert</i></Link></li>
           </ul>
         </div>
@@ -56,7 +62,7 @@ export default class Main extends Component<IProps, IState> {
         <li><Link to="/recipes" title="Рецептики" ><i className="material-icons">restaurant_menu</i>    Рецептики   </Link></li>
         <li><Link to="/my_ingredients" title="Мои продукты" ><i className="material-icons">kitchen</i>     Мои продукты     </Link></li>
         <li><Link to="/profile" title="Мой профиль" ><i className="material-icons">person</i>      Мой профиль      </Link></li>
-        <li><a title="Выйти из профиля" onClick={() => window.confirm("Точно хотите выйти?") && !window.localStorage.setItem('userToken', '') && window.location.reload(false)}><i className="material-icons">clear</i>     Выйти из профиля    </a></li>
+        <li><a title="Выйти из профиля" onClick={() => this.logout() }><i className="material-icons">clear</i>     Выйти из профиля    </a></li>
         <li><Link to="/search" title="ещё всякое..."><i className="material-icons">more_vert</i>    ещё всякое...    </Link></li>
       </ul>  
       
@@ -87,3 +93,13 @@ export default class Main extends Component<IProps, IState> {
     ;
   }
 }
+
+
+const mapStateToProps = (state:any) => {
+  return {
+    tasks: state.tasks,
+    filters: state.filters,
+    user: state.user,
+  }
+}
+export default connect((mapStateToProps), { logoutUser })(Main);
