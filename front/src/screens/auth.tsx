@@ -26,7 +26,7 @@ class Auth extends Component<IProps, IState> {
 
   async login(){
     try {
-      let {data} = await axiosService.post('/auth/login',  { 
+      const {data} = await axiosService.post('/auth/login',  { 
         email: this.state.email,
         password: this.state.password
       })
@@ -41,7 +41,7 @@ class Auth extends Component<IProps, IState> {
 
   async register(){
     try {
-      let {data} = await axiosService.post('/auth/register',  { 
+      const {data} = await axiosService.post('/auth/register',  { 
         email: this.state.email,
         password: this.state.password
       })

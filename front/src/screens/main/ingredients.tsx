@@ -107,7 +107,7 @@ export class Ingredients extends Component<IProps, IState> {
         <ul className="collection">
         { this.state.searchedIngredients && 
           this.state.searchedIngredients.map((value:any, index) => {
-            var color = this.state.myIngredients.includes(value.title) ? '#cecece': '#fff';
+            const color = this.state.myIngredients.includes(value.title) ? '#cecece': '#fff';
           
           return <li key={index} style={{cursor:'pointer', marginBottom: '1px', backgroundColor: color}} className="collection-item hoverable" onClick={()=>this.addIngredient(value.title)}>{value.title}</li>
         })}

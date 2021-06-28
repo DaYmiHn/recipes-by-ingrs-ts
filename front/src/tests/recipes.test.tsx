@@ -25,6 +25,6 @@ test('LOAD_RECIPES', ()=>{
 
 
 test('getCountMissIngr', ()=>{
-  let Recipe = new (Recipes as any);
+  const Recipe = new (Recipes as any);
   expect(Recipe.getCountMissIngr(1,3)).toEqual('red')
 })

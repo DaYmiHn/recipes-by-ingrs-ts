@@ -21,7 +21,7 @@ interface IState {
 }
 
 export function Profile(props:any) {
-  let match = useRouteMatch();
+  const match = useRouteMatch();
   const {user}:any = props;
   console.log(user)
   return (
@@ -101,7 +101,7 @@ export function Profile(props:any) {
 }
 
 function Topic() {
-  let { topicId }:any = useParams();
+  const { topicId }:any = useParams();
   return <h3>Страница: {topicId}</h3>;
 }
 

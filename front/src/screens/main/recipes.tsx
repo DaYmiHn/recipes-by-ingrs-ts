@@ -19,7 +19,7 @@ interface IProps {
 
 interface IState {
   recipes: object[],
-  loading: Boolean,
+  loading: boolean,
   category: string | null,
 }
 
@@ -87,7 +87,7 @@ export class Recipes extends Component<IProps, IState> {
 
 
   public getCountMissIngr(order:any,size:any){
-    let perc = order/size*100
+    const perc = order/size*100
     if (perc == 100 )
       return "#26a69a"
     else if (perc > 40 && perc <100)
