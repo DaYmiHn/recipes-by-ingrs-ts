@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql'
+import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 
@@ -13,18 +13,22 @@ import { IngredientModule } from './ingredient/ingredient.module';
 import { NewsModule } from './news/news.module';
 
 @Module({
-  imports: [ 
-    AuthModule, 
+  imports: [
+    AuthModule,
     ConfigModule.forRoot(),
-    UsersModule, 
-    MongooseModule.forRoot(process.env.NODE_ENV == 'production' ? process.env.MONGO_DB_URL: 'mongodb://localhost:27017/domchanski' ), 
-    RecipesModule, 
+    UsersModule,
+    MongooseModule.forRoot(
+      process.env.NODE_ENV == 'production'
+        ? process.env.MONGO_DB_URL
+        : 'mongodb://localhost:27017/domchanski',
+    ),
+    RecipesModule,
     IngredientModule,
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
-      definitions: { path: join(process.cwd(), './src/graphql.ts') }
+      definitions: { path: join(process.cwd(), './src/graphql.ts') },
     }),
-    NewsModule
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
